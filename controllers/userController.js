@@ -26,12 +26,12 @@ userController.createUser = async (req, res) => {
     }
 
     // التحقق من البيانات المطلوبة
-    if (userType !== 'customer' && !identityNumber) {
-      return res.status(400).json({
-        success: false,
-        error: 'رقم الهوية/الإقامة مطلوب لهذا النوع من المستخدمين'
-      });
-    }
+    // if (userType !== 'customer' && !identityNumber) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     error: 'رقم الهوية/الإقامة مطلوب لهذا النوع من المستخدمين'
+    //   });
+    // }
 
     // التحقق من عدم وجود مستخدم بنفس البيانات
     const existingUser = await User.findOne({
