@@ -385,7 +385,7 @@ async function getNotificationStats(req, res) {
   }
 }
 
-// تصدير الدوال مباشرة
+// تصدير الدوال بشكل منفصل
 module.exports = {
   createNotification,
   sendToUser,
