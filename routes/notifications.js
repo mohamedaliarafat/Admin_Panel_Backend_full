@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const notificationController = require('../controllers/notificationController');
-const authMiddleware = require('../middleware/auth');
-const roleMiddleware = require('../middleware/role');
+const { authenticate } = require('../middleware/auth');
+const { checkRole } = require('../middleware/role');
 const Notification = require('../models/Notification');
 
 // ⭐ دالة لجلب إحصائيات الإشعارات حسب النوع
@@ -76,18 +76,18 @@ async function getAdminStats(req, res) {
 }
 
 // ⭐ Routes للمستخدمين العاديين
-router.get('/my-notifications', authMiddleware, getUserNotifications);
-router.get('/stats', authMiddleware, getNotificationStats);
-router.patch('/:notificationId/read', authMiddleware, markAsRead);
-router.patch('/mark-all-read', authMiddleware, markAllAsRead);
+router.get('/my-notifications', authenticate, notificationController.getUserNotifications);
+router.get('/stats', authenticate, notificationController.getNotificationStats);
+router.patch('/:notificationId/read', authenticate, notificationController.markAsRead);
+router.patch('/mark-all-read', authenticate, notificationController.markAllAsRead);
 
 // ⭐ Routes للمدراء فقط
-router.post('/', roleMiddleware.checkRole(['admin', 'monitoring']), createNotification);
-router.post('/send-to-user', roleMiddleware.checkRole(['admin', 'monitoring']), sendToUser);
-router.post('/send-to-group', roleMiddleware.checkRole(['admin', 'monitoring']), sendToGroup);
-router.delete('/:notificationId', roleMiddleware.checkRole(['admin', 'monitoring']), deleteNotification);
+router.post('/', authenticate, checkRole(['admin', 'monitoring']), notificationController.createNotification);
+router.post('/send-to-user', authenticate, checkRole(['admin', 'monitoring']), notificationController.sendToUser);
+router.post('/send-to-group', authenticate, checkRole(['admin', 'monitoring']), notificationController.sendToGroup);
+router.delete('/:notificationId', authenticate, checkRole(['admin', 'monitoring']), notificationController.deleteNotification);
 
 // ⭐ Routes إضافية للمدراء
-router.get('/admin/stats', roleMiddleware.checkRole(['admin', 'monitoring']), getAdminStats);
+router.get('/admin/stats', authenticate, checkRole(['admin', 'monitoring']), getAdminStats);
 
 module.exports = router;
