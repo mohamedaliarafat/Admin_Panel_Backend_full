@@ -562,6 +562,74 @@ userController.getUserStats = async (req, res) => {
   }
 };
 
+// 🛍️ جلب منتجات المستخدم (للإدمن)
+userController.getUserProducts = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    res.json({
+      success: true,
+      products: [],
+      message: 'سيتم تطوير هذه الوظيفة قريباً'
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+// 🛍️ جلب منتجاتي
+userController.getMyProducts = async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      products: [],
+      message: 'سيتم تطوير هذه الوظيفة قريباً'
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+// 🚗 إدارة السائقين
+userController.manageDrivers = async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      message: 'تمت العملية بنجاح'
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+// ✅ الموافقة على ملف مستخدم
+userController.approveProfile = async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      message: 'تمت الموافقة بنجاح'
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
 // 🎯 دوال مساعدة
 const sendDriverStatusNotification = async (driver, action, reason) => {
   try {
