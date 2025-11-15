@@ -18,7 +18,7 @@ const petrolSchema = new mongoose.Schema({
     required: true,
     enum: ['91', '95', '98', 'diesel', 'premium_diesel']
   },
-  fuelLiters: { type: Number, required: true, min: 1, max: 100 },
+  fuelLiters: { type: Number, required: true, min: 1, max: 100000 }, // ✅ تم تعديل الحد الأعلى
   
   // 📍 موقع التوصيل
   deliveryLocation: {
@@ -88,6 +88,7 @@ const petrolSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
+// 📦 توليد رقم الطلب
 petrolSchema.pre("save", async function (next) {
   if (this.isNew) {
     const count = await mongoose.model("Petrol").countDocuments();
@@ -96,6 +97,7 @@ petrolSchema.pre("save", async function (next) {
   next();
 });
 
+// 💰 حساب السعر التقديري
 petrolSchema.methods.calculateEstimatedPrice = function() {
   const fuelPrices = { '91': 2.18, '95': 2.33, '98': 2.55, 'diesel': 1.85, 'premium_diesel': 2.10 };
   const fuelPrice = fuelPrices[this.fuelType] || 2.00;
@@ -105,6 +107,7 @@ petrolSchema.methods.calculateEstimatedPrice = function() {
   this.pricing.serviceFee = serviceFee;
 };
 
+// ⚡ الفهارس
 petrolSchema.index({ user: 1 });
 petrolSchema.index({ status: 1 });
 petrolSchema.index({ orderNumber: 1 });
