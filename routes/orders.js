@@ -2,18 +2,28 @@
 const express = require('express');
 const authMiddleware = require('../middleware/auth');
 const roleMiddleware = require('../middleware/role');
+const {
+  createFuelOrder,
+  createProductOrder,
+  getOrders,
+  getOrder,
+  updateOrderStatus,
+  setOrderPrice,
+  assignDriver,
+  updateOrderTracking
+} = require('../controllers/orderController');
 
 const router = express.Router();
 
-// 📊 إحصائيات الطلبات - ⭐ المسار الناقص
-router.get('/stats', 
-  authMiddleware.authenticate, 
-  roleMiddleware.checkRole(['admin', 'monitoring']), 
+// 📊 إحصائيات الطلبات
+router.get(
+  '/stats',
+  authMiddleware.authenticate,
+  roleMiddleware.checkRole(['admin', 'monitoring']),
   (req, res) => {
     res.json({
       success: true,
-      message: 'Order details - under development',
-      orderId: 'stats',
+      message: 'Order statistics - under development',
       stats: {
         totalOrders: 0,
         pendingOrders: 0,
@@ -27,103 +37,54 @@ router.get('/stats',
   }
 );
 
-// 📦 الطلبات العادية
+// 📦 الطلبات العادية (تجريبية - تحت التطوير)
 router.post('/', authMiddleware.authenticate, (req, res) => {
   res.json({
     success: true,
-    message: 'Order created - under development',
+    message: 'Order creation - under development',
     order: req.body
   });
 });
 
-router.get('/', authMiddleware.authenticate, (req, res) => {
-  res.json({
-    success: true,
-    message: 'Orders list - under development',
-    orders: []
-  });
-});
-
-router.get('/:orderId', authMiddleware.authenticate, (req, res) => {
-  res.json({
-    success: true,
-    message: 'Order details - under development',
-    orderId: req.params.orderId
-  });
-});
+router.get('/', authMiddleware.authenticate, getOrders);
+router.get('/:orderId', authMiddleware.authenticate, getOrder);
 
 // ⛽ طلبات الوقود
-router.post('/fuel', authMiddleware.authenticate, (req, res) => {
-  res.json({
-    success: true,
-    message: 'Fuel order created - under development',
-    order: req.body
-  });
-});
-
-router.get('/fuel/:orderId', authMiddleware.authenticate, (req, res) => {
-  res.json({
-    success: true,
-    message: 'Fuel order details - under development',
-    orderId: req.params.orderId,
-    type: 'fuel'
-  });
-});
+router.post('/fuel', authMiddleware.authenticate, createFuelOrder);
+router.get('/fuel/:orderId', authMiddleware.authenticate, getOrder);
 
 // 🛍️ طلبات المنتجات
-router.post('/product', authMiddleware.authenticate, (req, res) => {
-  res.json({
-    success: true,
-    message: 'Product order created - under development',
-    order: req.body
-  });
-});
+router.post('/product', authMiddleware.authenticate, createProductOrder);
+router.get('/product/:orderId', authMiddleware.authenticate, getOrder);
 
-router.get('/product/:orderId', authMiddleware.authenticate, (req, res) => {
-  res.json({
-    success: true,
-    message: 'Product order details - under development',
-    orderId: req.params.orderId,
-    type: 'product'
-  });
-});
+// 👨‍💼 إدارة الطلبات (تغيير الحالة / السعر / السائق)
+router.patch(
+  '/:orderId/status',
+  authMiddleware.authenticate,
+  roleMiddleware.checkRole(['approval_supervisor', 'admin', 'monitoring']),
+  updateOrderStatus
+);
 
-// 👨‍💼 إدارة الطلبات (للمشرفين والإدمن)
-router.patch('/:orderId/status', authMiddleware.authenticate, roleMiddleware.checkRole(['approval_supervisor', 'admin', 'monitoring']), (req, res) => {
-  res.json({
-    success: true,
-    message: 'Order status updated - under development',
-    orderId: req.params.orderId,
-    status: req.body.status
-  });
-});
+router.patch(
+  '/:orderId/price',
+  authMiddleware.authenticate,
+  roleMiddleware.checkRole(['admin']),
+  setOrderPrice
+);
 
-router.patch('/:orderId/price', authMiddleware.authenticate, roleMiddleware.checkRole(['admin']), (req, res) => {
-  res.json({
-    success: true,
-    message: 'Order price updated - under development',
-    orderId: req.params.orderId,
-    price: req.body.price
-  });
-});
-
-router.patch('/:orderId/assign-driver', authMiddleware.authenticate, roleMiddleware.checkRole(['admin', 'approval_supervisor']), (req, res) => {
-  res.json({
-    success: true,
-    message: 'Driver assigned - under development',
-    orderId: req.params.orderId,
-    driverId: req.body.driverId
-  });
-});
+router.patch(
+  '/:orderId/assign-driver',
+  authMiddleware.authenticate,
+  roleMiddleware.checkRole(['admin', 'approval_supervisor']),
+  assignDriver
+);
 
 // 🚗 تتبع الطلبات (للسائقين)
-router.patch('/:orderId/tracking', authMiddleware.authenticate, roleMiddleware.checkRole(['driver']), (req, res) => {
-  res.json({
-    success: true,
-    message: 'Order tracking updated - under development',
-    orderId: req.params.orderId,
-    tracking: req.body.tracking
-  });
-});
+router.patch(
+  '/:orderId/tracking',
+  authMiddleware.authenticate,
+  roleMiddleware.checkRole(['driver']),
+  updateOrderTracking
+);
 
 module.exports = router;
