@@ -131,7 +131,8 @@ exports.getOrders = async (req, res) => {
       status, 
       type, 
       page = 1, 
-      limit = 10 
+      limit = 10,
+      fuel
     } = req.query;
 
     let query = {};
@@ -139,7 +140,13 @@ exports.getOrders = async (req, res) => {
 
     // بناء الاستعلام حسب نوع المستخدم
     if (userType === 'customer') {
-      query.customerId = userId;
+      if (fuel === 'true') {
+        // للطلبات الوقود
+        query.user = userId;
+      } else {
+        // للطلبات العادية
+        query.customerId = userId;
+      }
     } else if (userType === 'driver') {
       query.driverId = userId;
     }
@@ -148,7 +155,7 @@ exports.getOrders = async (req, res) => {
     if (status) query.status = status;
     if (type) query.serviceType = type;
 
-    if (req.query.fuel === 'true') {
+    if (fuel === 'true') {
       // جلب طلبات الوقود
       orders = await Petrol.find(query)
         .populate('user', 'name phone')
@@ -165,7 +172,7 @@ exports.getOrders = async (req, res) => {
         .skip((page - 1) * limit);
     }
 
-    const total = req.query.fuel === 'true' 
+    const total = fuel === 'true' 
       ? await Petrol.countDocuments(query)
       : await Order.countDocuments(query);
 
@@ -187,6 +194,7 @@ exports.getOrders = async (req, res) => {
     });
   }
 };
+
 
 // 👁️ جلب طلب محدد
 exports.getOrder = async (req, res) => {
