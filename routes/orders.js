@@ -37,7 +37,15 @@ router.get(
   }
 );
 
-// 📦 الطلبات العادية (تجريبية - تحت التطوير)
+// 🛢️ طلبات الوقود (مقدمة على المسارات الديناميكية)
+router.post('/fuel', authMiddleware.authenticate, createFuelOrder);
+router.get('/fuel/:orderId', authMiddleware.authenticate, getOrder);
+
+// 🛍️ طلبات المنتجات
+router.post('/product', authMiddleware.authenticate, createProductOrder);
+router.get('/product/:orderId', authMiddleware.authenticate, getOrder);
+
+// 📦 الطلبات العامة
 router.post('/', authMiddleware.authenticate, (req, res) => {
   res.json({
     success: true,
@@ -48,14 +56,6 @@ router.post('/', authMiddleware.authenticate, (req, res) => {
 
 router.get('/', authMiddleware.authenticate, getOrders);
 router.get('/:orderId', authMiddleware.authenticate, getOrder);
-
-// ⛽ طلبات الوقود
-router.post('/fuel', authMiddleware.authenticate, createFuelOrder);
-router.get('/fuel/:orderId', authMiddleware.authenticate, getOrder);
-
-// 🛍️ طلبات المنتجات
-router.post('/product', authMiddleware.authenticate, createProductOrder);
-router.get('/product/:orderId', authMiddleware.authenticate, getOrder);
 
 // 👨‍💼 إدارة الطلبات (تغيير الحالة / السعر / السائق)
 router.patch(
